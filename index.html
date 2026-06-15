@@ -2,17 +2,73 @@
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8">
-    <title>API Loja - Documenta��o</title>
+    <title>API Loja - Documentação</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        html,
         body {
             margin: 0;
             padding: 0;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #redoc {
+            min-height: 100vh;
+        }
+
+        .status {
+            padding: 24px;
+            color: #1f2933;
+        }
+
+        .status h1 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .status p {
+            margin: 0;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <redoc spec-url="./swagger.json"></redoc>
+    <div id="redoc">
+        <div class="status">
+            <h1>Carregando documentação da API...</h1>
+            <p>Se esta mensagem permanecer, verifique se o navegador conseguiu carregar o script do ReDoc e o arquivo swagger.json.</p>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            var container = document.getElementById('redoc');
+            var showError = function (message) {
+                container.innerHTML = '<div class="status"><h1>Não foi possível carregar a documentação.</h1><p>' + message + '</p></div>';
+            };
+
+            if (!window.Redoc) {
+                showError('O script do ReDoc não foi carregado. Confira a conexão com o CDN ou tente publicar novamente.');
+                return;
+            }
+
+            try {
+                var render = Redoc.init('./swagger.json', {
+                    hideDownloadButton: false,
+                    nativeScrollbars: true
+                }, container);
+
+                if (render && typeof render.catch === 'function') {
+                    render.catch(function () {
+                        showError('O arquivo swagger.json não foi encontrado ou possui algum conteúdo incompatível.');
+                    });
+                }
+            } catch (error) {
+                showError('O arquivo swagger.json não foi encontrado ou possui algum conteúdo incompatível.');
+            }
+        });
+    </script>
     <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
 </body>
 </html>
